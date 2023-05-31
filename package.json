@@ -1,0 +1,42 @@
+{
+    "name": "durafetch",
+    "version": "0.4.0",
+    "description": "CLI to download Cloudflare Durable Object state to a SQLite database.",
+    "main": "dist/core.js",
+    "bin": {
+        "durafetch": "dist/cli.js"
+    },
+    "scripts": {
+        "start": "node ./dist/cli.js",
+        "postinstall": "ln -s node_modules/better-sqlite3/build build && ./sh/esbuild-prod.sh"
+    },
+    "engines": {
+        "node": ">=17.0.0"
+    },
+    "dependencies": {
+        "better-sqlite3": "^8.4.0",
+        "esbuild": "^0.17.19",
+        "lodash": "^4.17.21",
+        "ws": "^8.13.0",
+        "bufferutil": "^4.0.7",
+        "utf-8-validate": "^6.0.3"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.42",
+        "@types/ws": "^8.5.4"
+    },
+    "author": "Enzo",
+    "keywords": [
+        "Cloudflare",
+        "Durable Object",
+        "Cloudflare Durable Object",
+        "Cloudflare Workers",
+        "durafetch"
+    ],
+    "homepage": "https://durafetch.com",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/emadda/durafetch.git"
+    },
+    "license": "MIT"
+}

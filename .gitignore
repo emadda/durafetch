@@ -1,0 +1,5 @@
+dist
+notes
+build
+del
+src/test/config-examples/01-config-dev.json
