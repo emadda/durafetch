@@ -53,6 +53,9 @@ const run = async () => {
     } else {
         await ins.start();
         console.log("Complete.");
+
+        // @todo/low Does not exit itself - likely ws still active.
+        process.exit();
     }
 }
 

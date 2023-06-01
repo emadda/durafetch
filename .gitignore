@@ -3,3 +3,4 @@ notes
 build
 del
 src/test/config-examples/01-config-dev.json
+tests/test-01/db/*

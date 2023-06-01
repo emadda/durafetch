@@ -1,6 +1,6 @@
 {
     "name": "durafetch",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "CLI to download Cloudflare Durable Object state to a SQLite database.",
     "main": "dist/core.js",
     "bin": {
@@ -15,11 +15,11 @@
     },
     "dependencies": {
         "better-sqlite3": "^8.4.0",
+        "bufferutil": "^4.0.7",
         "esbuild": "^0.17.19",
         "lodash": "^4.17.21",
-        "ws": "^8.13.0",
-        "bufferutil": "^4.0.7",
-        "utf-8-validate": "^6.0.3"
+        "utf-8-validate": "^6.0.3",
+        "ws": "^8.13.0"
     },
     "devDependencies": {
         "@types/node": "^17.0.42",
