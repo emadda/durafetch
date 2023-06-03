@@ -1,6 +1,6 @@
 {
     "name": "durafetch",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "CLI to download Cloudflare Durable Object state to a SQLite database.",
     "main": "dist/core.js",
     "bin": {

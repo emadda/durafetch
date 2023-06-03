@@ -10,6 +10,53 @@ const url_paths = {
 };
 
 
+const is_plaintext_websocket = (x) => x.protocol === "ws:";
+const target_is_localhost = (x) => {
+    return (
+        // E.g. durafetch_worker-x.localhost
+        x.hostname.endsWith("localhost") ||
+
+        // E.g. "127.0.0.1:1234" when using a local reverse proxy which forwards to the above subdomain.
+        x.hostname === "127.0.0.1"
+    )
+}
+const plaintext_websocket_used_must_exit_message = (ws_url) => `WebSocket server URL must be a secure connection (wss://) when in production. Tried to connect to: ${ws_url}. You can disable this check by running in dev mode: 'NODE_ENV="development" durafetch ...'`;
+
+
+const plaintext_warning_in_prod = {};
+
+// Avoid using plaintext WebSocket in prod.
+const exit_if_plaintext_websocket_used_in_production = (ws_url) => {
+    const x = new URL(ws_url);
+
+
+    if (!is_dev()) {
+        // Prod
+        if (is_plaintext_websocket(x)) {
+            if (target_is_localhost(x)) {
+                if(!(ws_url in plaintext_warning_in_prod)) {
+                    // Just once (when polling do not print out on every poll).
+                    plaintext_warning_in_prod[ws_url] = true;
+                    const msg = `Note: Connecting to a plaintext Websocket: ${ws_url}. Ensure connections are encrypted if they travel over the internet, or that you are only using test data.`;
+                    console.log(msg);
+                }
+            } else {
+                console.error(plaintext_websocket_used_must_exit_message(ws_url));
+                process.exit(1);
+            }
+        }
+    } else {
+        // Dev (for CLI build)
+        if (is_plaintext_websocket(x)) {
+            if (!target_is_localhost(x)) {
+                const msg = `Connecting to a plaintext Websocket that does not contain "localhost" - please ensure the underlying network connections are private or you are using only test data. Connecting to: ${ws_url}.`;
+                console.log(msg);
+            }
+        }
+    }
+}
+
+
 // Note: This ws endpoint will also stream new keys as they are created.
 // - But the current version just does a download of the DO data that has changed since the last download and exits.
 const get_full_list_of_durable_objects = async (server_opts) => {
@@ -18,16 +65,7 @@ const get_full_list_of_durable_objects = async (server_opts) => {
         auth_token
     } = server_opts;
 
-    if (!is_dev() && !ws_url.startsWith("wss:")) {
-        console.error(`WebSocket server can only be a secure connection when in production. Tried to connect to: ${ws_url}.`);
-        process.exit(1);
-    }
-
-    if (ws_url.startsWith("ws:") && !(ws_url.includes("localhost") || ws_url.includes("127.0.0.1"))) {
-        const msg = `Connecting to a plaintext Websocket that does not contain "localhost" - please ensure the underlying network connections are private or you are using only test data. Tried to connect to: ${ws_url}.`;
-        console.error(msg);
-        console.error(msg);
-    }
+    exit_if_plaintext_websocket_used_in_production(ws_url);
 
 
     return new Promise((resolve, reject) => {
@@ -95,10 +133,7 @@ const get_kvs_from_durable_object = async (server_opts, x, max_local_write_id) =
         auth_token
     } = server_opts;
 
-    if (!is_dev() && !ws_url.startsWith("wss")) {
-        console.error(`WebSocket server can only be a secure connection when in production. Tried to connect to: ${ws_url}.`);
-        process.exit(1);
-    }
+    exit_if_plaintext_websocket_used_in_production(ws_url);
 
 
     const url = new URL(`${ws_url}${url_paths.external_do_read_all_from}`);
